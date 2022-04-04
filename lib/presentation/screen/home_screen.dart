@@ -4,13 +4,14 @@ import 'package:flutter_stopwatch_timetracking/application/theme/app_colors.dart
 import 'package:flutter_stopwatch_timetracking/application/widget/appbar/app_bar_tamplate.dart';
 import 'package:flutter_stopwatch_timetracking/application/widget/sliver/sliver_body_rouner.dart';
 import 'package:flutter_stopwatch_timetracking/di/di.dart';
+import 'package:flutter_stopwatch_timetracking/domain/entity/stopwatch.dart';
+import 'package:flutter_stopwatch_timetracking/domain/entity/wrok_timer.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/bloc/home_bloc.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/icons/custom_icons.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/widget/pause_card.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/widget/timer_button.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class HomeScreen extends StatelessWidget {
   static const routeName = '/';
@@ -36,13 +37,12 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: AppColors.backgroundColor,
         body: Consumer<HomeBloc>(
           builder: (context, homeBloc, child) {
-            return StreamBuilder<int>(
-              stream: homeBloc.currentTimerStream,
+            return StreamBuilder<WorkTimer>(
+              stream: homeBloc.timerStream,
               builder: (context, snapshot) {
-                final int currentTime = snapshot.data ?? 0;
-
-                final int pauseTime = homeBloc.pauseTimer.rawTime.value;
-                final int wholeTime = homeBloc.workTimer.rawTime.value;
+                final int currentTime = snapshot.data == null ? 0 : snapshot.data!.currentTime;
+                final int workTime = snapshot.data == null ? 0 : snapshot.data!.workTime;
+                final int pauseTime = snapshot.data == null ? 0 : snapshot.data!.pauseTime;
 
                 return CustomScrollView(
                   physics: const AlwaysScrollableScrollPhysics(parent: ClampingScrollPhysics()),
@@ -53,7 +53,10 @@ class HomeScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(left: 18),
                         child: Text(
                           _displayDate,
-                          style: const TextStyle(fontSize: 20),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'AvenirNext',
+                          ),
                         ),
                       ),
                       actions: const [
@@ -70,43 +73,59 @@ class HomeScreen extends StatelessWidget {
                     const SliverBodyRounder(),
                     homeBloc.currentTimer.isRunning
                         ? SliverToBoxAdapter(
-                            child: Center(
-                                child: Text(
-                              StopWatchTimer.getDisplayTime(currentTime, hours: true, milliSecond: false),
-                              style: TextStyle(
-                                  fontSize: 60,
-                                  color: homeBloc.pauseTimer.isRunning
-                                      ? AppColors.pauseTimeColor
-                                      : AppColors.primaryColor),
-                            )),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 21),
+                              child: Center(
+                                  child: Text(
+                                Stopwatch.displayTime(currentTime),
+                                style: TextStyle(
+                                    fontFamily: 'AvenirNext',
+                                    fontSize: 70,
+                                    letterSpacing: 1.25,
+                                    color: homeBloc.pauseTimer.isRunning
+                                        ? AppColors.pauseTimeColor
+                                        : AppColors.primaryColor),
+                              )),
+                            ),
                           )
                         : const SliverToBoxAdapter(),
                     SliverToBoxAdapter(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          homeBloc.currentTimer.isRunning
-                              ? Center(
-                                  child: Text(
-                                    StopWatchTimer.getDisplayTime(wholeTime, hours: true, milliSecond: false),
-                                    style: const TextStyle(fontSize: 14, color: AppColors.primaryColor),
-                                  ),
-                                )
-                              : Container(),
-                          homeBloc.currentTimer.isRunning
-                              ? Center(
-                                  child: Text(
-                                    StopWatchTimer.getDisplayTime(pauseTime, hours: true, milliSecond: false),
-                                    style: const TextStyle(fontSize: 14, color: AppColors.pauseTimeColor),
-                                  ),
-                                )
-                              : Container(),
-                        ],
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 54),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            homeBloc.currentTimer.isRunning
+                                ? Center(
+                                    child: Text(
+                                      Stopwatch.displayTime(workTime),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: AppColors.paleGreen,
+                                        fontFamily: 'AvenirNext',
+                                      ),
+                                    ),
+                                  )
+                                : Container(),
+                            homeBloc.currentTimer.isRunning
+                                ? Center(
+                                    child: Text(
+                                      Stopwatch.displayTime(pauseTime),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: AppColors.pauseTimeColor,
+                                        fontFamily: 'AvenirNext',
+                                      ),
+                                    ),
+                                  )
+                                : Container(),
+                          ],
+                        ),
                       ),
                     ),
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 32),
+                        padding: EdgeInsets.only(top: homeBloc.currentTimer.isRunning ? 17 : 32),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -120,7 +139,7 @@ class HomeScreen extends StatelessWidget {
                                 color: Colors.white,
                                 size: 28,
                               ),
-                              text: 'Начать ПУЛ',
+                              text: 'Начать \nПУЛ',
                             ),
                             !homeBloc.currentTimer.isRunning
                                 ? TimerButton(
@@ -137,13 +156,13 @@ class HomeScreen extends StatelessWidget {
                                 : TimerButton(
                                     disabled: false,
                                     onPressed: homeBloc.stop,
-                                    color: AppColors.warningColor,
+                                    color: AppColors.stopButtonColor,
                                     icon: const Icon(
                                       CustomIcons.stop,
                                       color: Colors.white,
                                       size: 28,
                                     ),
-                                    text: 'Закончить смену'),
+                                    text: 'Закрыть смену'),
                           ],
                         ),
                       ),
@@ -153,7 +172,12 @@ class HomeScreen extends StatelessWidget {
                         padding: EdgeInsets.only(top: 28, left: 24, bottom: 12),
                         child: Text(
                           'Остановка работ',
-                          style: TextStyle(color: AppColors.mainFontColor, fontSize: 14, letterSpacing: 0.25),
+                          style: TextStyle(
+                            color: AppColors.mainFontColor,
+                            fontSize: 14,
+                            letterSpacing: 0.25,
+                            fontFamily: 'AvenirNext',
+                          ),
                         ),
                       ),
                     ),
@@ -172,7 +196,11 @@ class HomeScreen extends StatelessWidget {
                               padding: EdgeInsets.only(left: 24),
                               child: Text(
                                 'Смена не начата - остановка невозможна',
-                                style: TextStyle(color: AppColors.disabledColor, fontSize: 14),
+                                style: TextStyle(
+                                  color: AppColors.disabledColor,
+                                  fontSize: 14,
+                                  fontFamily: 'AvenirNext',
+                                ),
                               ),
                             ),
                           ),

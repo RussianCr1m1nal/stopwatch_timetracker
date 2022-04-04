@@ -30,9 +30,9 @@ class TimerButton extends StatelessWidget {
             border: Border.all(color: color, width: 1),
             borderRadius: BorderRadius.circular(48),
             color: disabled ? disabledColor : color,
-            boxShadow: [
+            boxShadow: disabled ? [] : [
               BoxShadow(
-                color: AppColors.black.withOpacity(0.25),
+                color: AppColors.black.withOpacity(0.2),
                 spreadRadius: 0,
                 blurRadius: 10,
               ),
@@ -40,7 +40,7 @@ class TimerButton extends StatelessWidget {
           ),
           alignment: Alignment.centerLeft,
           height: 64,
-          width: 156,
+          width: 165,
           child: Row(
             children: [
               Padding(
@@ -51,6 +51,7 @@ class TimerButton extends StatelessWidget {
                 child: Text(
                   text,
                   style: const TextStyle(
+                    fontFamily: 'AvenirNext',
                     fontSize: 16,
                     color: AppColors.white,
                   ),

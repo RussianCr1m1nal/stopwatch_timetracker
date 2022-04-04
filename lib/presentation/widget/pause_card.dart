@@ -29,6 +29,8 @@ class PauseCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Card(
+            elevation: 4,
+            shadowColor: Color.fromRGBO(0, 0, 0, 0.5),
             shape: RoundedRectangleBorder(
               side: inFocus
                   ? const BorderSide(
@@ -52,14 +54,20 @@ class PauseCard extends StatelessWidget {
               title: Text(
                 title,
                 style: TextStyle(
+                    fontFamily: 'AvenirNext',
                     color: blur ? AppColors.black.withOpacity(0.4) : AppColors.black,
                     fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                     letterSpacing: 0.25),
               ),
               subtitle: Text(
                 subtittle,
-                style: const TextStyle(color: AppColors.subtitleColor, fontSize: 12, fontWeight: FontWeight.w400),
+                style: const TextStyle(
+                  color: AppColors.subtitleColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: 'AvenirNext',
+                ),
               ),
             ),
           ),

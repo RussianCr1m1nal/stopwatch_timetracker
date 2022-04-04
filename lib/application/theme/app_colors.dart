@@ -48,4 +48,6 @@ class AppColors {
   static const Color subtitleColor = Color.fromRGBO(151, 151, 151, 1);
   static const Color pauseIconColor = Color.fromRGBO(246, 190, 78, 1);
   static const Color pauseCardBorderColor = Color.fromRGBO(246, 190, 78, 1);  
+  static const Color paleGreen = Color.fromRGBO(152, 172, 138, 1);
+  static const Color stopButtonColor = Color.fromRGBO(255, 77, 0, 1);
 }
