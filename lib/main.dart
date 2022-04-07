@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_stopwatch_timetracking/application/theme/app_colors.dart';
 import 'package:flutter_stopwatch_timetracking/application/theme/app_theme.dart';
+import 'package:flutter_stopwatch_timetracking/data/database/object_box.dart';
 import 'package:flutter_stopwatch_timetracking/di/di.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/screen/home_screen.dart';
 import 'package:injectable/injectable.dart';
@@ -14,6 +15,8 @@ void main() async {
     statusBarBrightness: Brightness.dark,
     statusBarColor: AppColors.appBarBackgroundColor,
   ));
+
+  await initStoreForDataBase();
 
   await configureDependencies(Environment.dev);
 

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_stopwatch_timetracking/application/enum/pause_reason.dart';
 import 'package:flutter_stopwatch_timetracking/application/theme/app_colors.dart';
 import 'package:flutter_stopwatch_timetracking/application/widget/appbar/app_bar_tamplate.dart';
 import 'package:flutter_stopwatch_timetracking/application/widget/sliver/sliver_body_rouner.dart';
 import 'package:flutter_stopwatch_timetracking/di/di.dart';
-import 'package:flutter_stopwatch_timetracking/domain/entity/stopwatch.dart';
-import 'package:flutter_stopwatch_timetracking/domain/entity/wrok_timer.dart';
+import 'package:flutter_stopwatch_timetracking/domain/entity/entity.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/bloc/home_bloc.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/icons/custom_icons.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/widget/pause_card.dart';
@@ -182,12 +180,27 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     homeBloc.currentTimer.isRunning
-                        ? StreamBuilder<PauseReason?>(
-                            stream: homeBloc.pauseReasonStream,
+                        ? StreamBuilder<List<PauseReason>>(
+                            stream: homeBloc.pauseListStream,
                             builder: (context, snapshot) {
-                              return SliverToBoxAdapter(
-                                child: Column(
-                                  children: pauseList(homeBloc, snapshot.data),
+                              final items = snapshot.data ?? [];
+                              final PauseReason? currentReason = homeBloc.pauseSubject.value;
+
+                              return SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) {
+                                    final PauseReason reason = items[index];
+                                    return PauseCard(
+                                      title: reason.name,
+                                      subtittle: reason.discription,
+                                      disabled: currentReason != null,
+                                      inFocus: reason == currentReason,
+                                      onTap: () {
+                                        homeBloc.pause(reason);
+                                      },
+                                    );
+                                  },
+                                  childCount: items.length,
                                 ),
                               );
                             })
@@ -212,57 +225,5 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  List<Widget> pauseList(HomeBloc homeBloc, PauseReason? currentReason) {
-    final bool disabled = currentReason != null;
-
-    return [
-      PauseCard(
-        disabled: disabled,
-        inFocus: currentReason == PauseReason.breaking,
-        onTap: () {
-          homeBloc.pause(PauseReason.breaking);
-        },
-        title: 'Поломка',
-        subtittle: 'Подозрение на поломку, дигностика поломки',
-      ),
-      PauseCard(
-        disabled: disabled,
-        inFocus: currentReason == PauseReason.waiting,
-        onTap: () {
-          homeBloc.pause(PauseReason.waiting);
-        },
-        title: 'Ожидание ТМЦ',
-        subtittle: 'Ожидание подвоза воды, СЗР',
-      ),
-      PauseCard(
-        disabled: disabled,
-        inFocus: currentReason == PauseReason.refueling,
-        onTap: () {
-          homeBloc.pause(PauseReason.refueling);
-        },
-        title: 'Заправка',
-        subtittle: 'Ожидание топливозаправщика, заправка техники топливом',
-      ),
-      PauseCard(
-        disabled: disabled,
-        inFocus: currentReason == PauseReason.technicalBreak,
-        onTap: () {
-          homeBloc.pause(PauseReason.technicalBreak);
-        },
-        title: 'Технический перерыв',
-        subtittle: 'Туалет, обед',
-      ),
-      PauseCard(
-        disabled: disabled,
-        inFocus: currentReason == PauseReason.weather,
-        onTap: () {
-          homeBloc.pause(PauseReason.weather);
-        },
-        title: 'Погода',
-        subtittle: 'Остановка в связи с погодными условиями',
-      ),
-    ];
   }
 }
