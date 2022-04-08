@@ -18,11 +18,13 @@ class ObjectBoxDb {
   Store? store;
   Box<TimerState>? timerStateBox;
   Box<PauseReason>? pauseReasonBox;
+  Box<TimerLog>? timerLogBox;
 
   ObjectBoxDb() {
     store = dbStore;
     timerStateBox = store!.box<TimerState>();
     pauseReasonBox = store!.box<PauseReason>();
+    timerLogBox = store!.box<TimerLog>();
   }
 
   void saveTimerState(TimerState state) async {
@@ -59,5 +61,18 @@ class ObjectBoxDb {
     reason ??= PauseReason(name: map['name'], discription: map['discription'], id: map['id']);
 
     pauseReasonBox?.put(reason);
+  }
+
+  void saveTimerLog(TimerLog log) {
+    timerLogBox?.put(log);
+  }
+
+  Stream<List<TimerLog>>? watchTimerLogs() {    
+    final queryBuilder = timerLogBox?.query();
+    queryBuilder?.order(TimerLog_.date, flags: Order.descending);
+
+    return queryBuilder?.watch(triggerImmediately: true).map((query) {
+      return query.find();
+    });
   }
 }

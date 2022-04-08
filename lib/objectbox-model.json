@@ -68,10 +68,42 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "3:488923507948566270",
+      "lastPropertyId": "4:5318798541318462835",
+      "name": "TimerLog",
+      "properties": [
+        {
+          "id": "1:2306716574827461720",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5471972805779210561",
+          "name": "date",
+          "type": 10
+        },
+        {
+          "id": "3:7479193053363252708",
+          "name": "eventIndex",
+          "type": 6
+        },
+        {
+          "id": "4:5318798541318462835",
+          "name": "pauseReasonId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "2:2358386565130001951",
+          "relationTarget": "PauseReason"
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "2:5842747879874313829",
-  "lastIndexId": "1:3186012167221630585",
+  "lastEntityId": "3:488923507948566270",
+  "lastIndexId": "2:2358386565130001951",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,

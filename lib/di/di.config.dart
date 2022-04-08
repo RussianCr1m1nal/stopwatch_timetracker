@@ -16,11 +16,14 @@ import '../domain/repository/pause_reason_repository.dart' as _i8;
 import '../domain/repository/pause_reason_repository_impl.dart' as _i9;
 import '../domain/repository/timer_repository.dart' as _i10;
 import '../domain/repository/timer_repository_impl.dart' as _i11;
-import '../domain/usecase/get_timer_state_usecase.dart' as _i14;
-import '../domain/usecase/save_timer_state_usecase.dart' as _i15;
+import '../domain/usecase/get_timer_state_usecase.dart' as _i15;
+import '../domain/usecase/save_timer_log_usecase.dart' as _i17;
+import '../domain/usecase/save_timer_state_usecase.dart' as _i18;
 import '../domain/usecase/update_pause_reasons_usecase.dart' as _i12;
 import '../domain/usecase/watch_pause_reasons_usecase.dart' as _i13;
-import '../presentation/bloc/home_bloc.dart'
+import '../domain/usecase/watch_timer_log_usecase.dart' as _i14;
+import '../presentation/bloc/home_bloc.dart' as _i19;
+import '../presentation/bloc/log_bloc.dart'
     as _i16; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
@@ -42,14 +45,21 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
           repository: get<_i8.PauseReasonRepository>()));
   gh.factory<_i13.WatchPauseReasonsUseCase>(() => _i13.WatchPauseReasonsUseCase(
       repository: get<_i8.PauseReasonRepository>()));
-  gh.factory<_i14.GetTimerStateUseCase>(
-      () => _i14.GetTimerStateUseCase(repository: get<_i10.TimerRepository>()));
-  gh.factory<_i15.SaveTimerStateUseCase>(() =>
-      _i15.SaveTimerStateUseCase(repository: get<_i10.TimerRepository>()));
-  gh.factory<_i16.HomeBloc>(() => _i16.HomeBloc(
-      saveTimerStateUseCase: get<_i15.SaveTimerStateUseCase>(),
-      getTimerStateUseCase: get<_i14.GetTimerStateUseCase>(),
+  gh.factory<_i14.WatchTimerLogUseCase>(
+      () => _i14.WatchTimerLogUseCase(repository: get<_i10.TimerRepository>()));
+  gh.factory<_i15.GetTimerStateUseCase>(
+      () => _i15.GetTimerStateUseCase(repository: get<_i10.TimerRepository>()));
+  gh.factory<_i16.LogBloc>(() =>
+      _i16.LogBloc(watchTimerLogUseCase: get<_i14.WatchTimerLogUseCase>()));
+  gh.factory<_i17.SaveTimerLogUseCase>(
+      () => _i17.SaveTimerLogUseCase(repository: get<_i10.TimerRepository>()));
+  gh.factory<_i18.SaveTimerStateUseCase>(() =>
+      _i18.SaveTimerStateUseCase(repository: get<_i10.TimerRepository>()));
+  gh.factory<_i19.HomeBloc>(() => _i19.HomeBloc(
+      saveTimerStateUseCase: get<_i18.SaveTimerStateUseCase>(),
+      getTimerStateUseCase: get<_i15.GetTimerStateUseCase>(),
       watchPauseReasonsUseCase: get<_i13.WatchPauseReasonsUseCase>(),
-      updatePauseReasonsUseCase: get<_i12.UpdatePauseReasonsUseCase>()));
+      updatePauseReasonsUseCase: get<_i12.UpdatePauseReasonsUseCase>(),
+      saveTimerLogUseCase: get<_i17.SaveTimerLogUseCase>()));
   return get;
 }

@@ -6,6 +6,7 @@ import 'package:flutter_stopwatch_timetracking/di/di.dart';
 import 'package:flutter_stopwatch_timetracking/domain/entity/entity.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/bloc/home_bloc.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/icons/custom_icons.dart';
+import 'package:flutter_stopwatch_timetracking/presentation/screen/log_screen.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/widget/pause_card.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/widget/timer_button.dart';
 import 'package:intl/intl.dart';
@@ -57,13 +58,18 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      actions: const [
-                        Padding(
-                          padding: EdgeInsets.only(right: 18),
-                          child: Icon(
-                            CustomIcons.profile,
-                            size: 27,
-                            color: AppColors.white,
+                      actions: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, LogScreen.routeName);
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.only(right: 18),
+                            child: Icon(
+                              CustomIcons.profile,
+                              size: 27,
+                              color: AppColors.white,
+                            ),
                           ),
                         ),
                       ],

@@ -5,6 +5,7 @@ import 'package:flutter_stopwatch_timetracking/application/theme/app_theme.dart'
 import 'package:flutter_stopwatch_timetracking/data/database/object_box.dart';
 import 'package:flutter_stopwatch_timetracking/di/di.dart';
 import 'package:flutter_stopwatch_timetracking/presentation/screen/home_screen.dart';
+import 'package:flutter_stopwatch_timetracking/presentation/screen/log_screen.dart';
 import 'package:injectable/injectable.dart';
 
 void main() async {
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.defaults(),
       routes: {
         HomeScreen.routeName: (BuildContext context) => const HomeScreen(),
+        LogScreen.routeName: (BuildContext context) => const LogScreen(),
       },
       initialRoute: HomeScreen.routeName,
     );

@@ -6,4 +6,7 @@ abstract class DBDtaSource {
   Future<TimerState> getTimerState();
   Stream<List<PauseReason>>? watchPauseReaons();
   Future<void> updatePauseReasons(List<Map<String, dynamic>> reasonsList);
+
+  Future<void> saveTimerLog(TimerLog log);
+  Stream<List<TimerLog>>? watchTimerLogs();
 }

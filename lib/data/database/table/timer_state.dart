@@ -11,10 +11,11 @@ class TimerState {
   bool isPaused;
   ToOne<PauseReason> pauseReason = ToOne<PauseReason>();
 
-  TimerState(
-      {this.id = 0,
-      required this.timeOnPause,
-      required this.timestamp,
-      required this.wrokTime,
-      required this.isPaused});
+  TimerState({
+    this.id = 0,
+    required this.timeOnPause,
+    required this.timestamp,
+    required this.wrokTime,
+    required this.isPaused,
+  });
 }

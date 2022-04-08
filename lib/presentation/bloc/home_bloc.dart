@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_stopwatch_timetracking/application/enum/timer_event.dart';
 import 'package:flutter_stopwatch_timetracking/domain/entity/entity.dart';
 import 'package:flutter_stopwatch_timetracking/domain/usecase/get_timer_state_usecase.dart';
+import 'package:flutter_stopwatch_timetracking/domain/usecase/save_timer_log_usecase.dart';
 import 'package:flutter_stopwatch_timetracking/domain/usecase/save_timer_state_usecase.dart';
 import 'package:flutter_stopwatch_timetracking/domain/usecase/update_pause_reasons_usecase.dart';
 import 'package:flutter_stopwatch_timetracking/domain/usecase/watch_pause_reasons_usecase.dart';
@@ -14,6 +16,7 @@ class HomeBloc {
   final GetTimerStateUseCase getTimerStateUseCase;
   final WatchPauseReasonsUseCase watchPauseReasonsUseCase;
   final UpdatePauseReasonsUseCase updatePauseReasonsUseCase;
+  final SaveTimerLogUseCase saveTimerLogUseCase;
 
   final scrollController = ScrollController();
 
@@ -41,6 +44,7 @@ class HomeBloc {
     required this.getTimerStateUseCase,
     required this.watchPauseReasonsUseCase,
     required this.updatePauseReasonsUseCase,
+    required this.saveTimerLogUseCase,
   }) {
     _watchPauseReasons();
     _setTimers();
@@ -94,17 +98,22 @@ class HomeBloc {
 
   Future<void> _saveTimers() async {
     await saveTimerStateUseCase(TimerState(
-      isPaused: pauseTimer.isRunning,
-      timeOnPause: pauseTimer.time.value,
-      wrokTime: workTimer.time.value,
-      timestamp: DateTime.now().millisecondsSinceEpoch,
-      pauseReason: pauseSubject.hasValue ? pauseSubject.value : null
+        isPaused: pauseTimer.isRunning,
+        timeOnPause: pauseTimer.time.value,
+        wrokTime: workTimer.time.value,
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+        pauseReason: pauseSubject.hasValue ? pauseSubject.value : null));
+  }
+
+  _saveLog(TimerEvent event) async {
+    await saveTimerLogUseCase(TimerLog(
+      date: DateTime.now(),
+      event: event,
+      pauseReason: pauseSubject.hasValue ? pauseSubject.value : null,
     ));
   }
 
-  _watchPauseReasons() async {
-    await updatePauseReasonsUseCase();
-
+  _watchPauseReasons() async {    
     (await watchPauseReasonsUseCase()).fold((failure) {
       print(failure.message);
     }, (reasonsStream) {
@@ -114,6 +123,7 @@ class HomeBloc {
       });
     });
 
+    updatePauseReasonsUseCase();
   }
 
   void start() async {
@@ -127,6 +137,7 @@ class HomeBloc {
     pauseSubject.add(null);
 
     _saveTimers();
+    _saveLog(TimerEvent.start);
   }
 
   void pause(PauseReason pauseReason) async {
@@ -140,16 +151,16 @@ class HomeBloc {
     pauseSubject.add(pauseReason);
 
     _saveTimers();
+    _saveLog(TimerEvent.pause);
   }
 
   void stop() async {
-    currentTimer.reset();
-
-    workTimer.reset();
-    pauseTimer.reset();
-
     workTimer.clearPresetTime();
     pauseTimer.clearPresetTime();
+
+    currentTimer.reset();
+    workTimer.reset();
+    pauseTimer.reset();
 
     await saveTimerStateUseCase(TimerState(
       timestamp: 0,
@@ -158,6 +169,8 @@ class HomeBloc {
       isPaused: false,
       pauseReason: null,
     ));
+
+    _saveLog(TimerEvent.stop);
   }
 
   void dispose() async {
